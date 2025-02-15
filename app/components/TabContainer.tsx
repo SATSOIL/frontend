@@ -19,8 +19,8 @@ const TabContainer: React.FC = () => {
   
     return (
       <div className="tab-container">
-        <button className="tab active" id="tabSimple" onClick={() => switchSearchTab('simple')}>簡易検索</button>
-        <button className="tab" id="tabDetailed" onClick={() => switchSearchTab('detailed')}>詳細検索</button>
+        <button className="tab active" id="tabSimple" onClick={() => switchSearchTab('simple')} data-i18n="tabcontainer.simpleserach">簡易検索</button>
+        <button className="tab" id="tabDetailed" onClick={() => switchSearchTab('detailed')} data-i18n="tabcontainer.detailserach">詳細検索</button>
       </div>
     );
   };

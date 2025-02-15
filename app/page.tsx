@@ -1,28 +1,50 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Header from './components/Header';
 import TabContainer from './components/TabContainer';
 import { updateLanguage } from '../utils/translations';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'leaflet/dist/leaflet.css';
 import './globals.css';
-import Nav from './components/Nav';
 
 const Home: React.FC = () => {
   const [currentLang, setCurrentLang] = useState<'ja' | 'en'>('ja');
+  const mapRef = useRef<HTMLDivElement>(null);
+  const handleSetLanguage = (lang: string) => {
+    if (lang === 'ja' || lang === 'en') {
+      setCurrentLang(lang);
+    } else {
+      console.warn(`Unsupported language: ${lang}`);
+    }
+  };
 
   useEffect(() => {
     updateLanguage(currentLang);
   }, [currentLang]);
 
+  useEffect(() => {
+    import('leaflet').then((L) => {
+      if (mapRef.current) {
+        const map = L.map(mapRef.current, {
+          center: [35.6895, 139.6917],
+          zoom: 10,
+        });
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        }).addTo(map);
+      }
+    });
+  }, []);
+
   return (
     <div>
-      <Header setLanguage={setCurrentLang} />
+      <Header setLanguage={handleSetLanguage} />
       <main>
         <section id="home" className="active">
           <h2 data-i18n="section.home.title">ダッシュボード</h2>
-          <p>
+          <p data-i18n="section.home.text">
             ようこそ。SATSOILは最新の農地投資市場情報、注目案件および各種通知を提供する統合プラットフォームです。
           </p>
           <br />
@@ -56,11 +78,11 @@ const Home: React.FC = () => {
           <br />
           <h3 data-i18n="section.home.alerts">最新市場レポート</h3>
           <ul>
-            <li>2025/01/31: 農地BエリアのNDVI指標が上昇傾向</li>
-            <li>2025/01/29: 台風接近に伴う強風注意報 ( 地域X )</li>
-            <li>2025/01/27: 農地Dにおける土壌pH改善の兆候検出</li>
-            <li>2025/01/25: 農地Mで輪作効果向上が確認</li>
-            <li>2025/01/20: 新規作物試験結果（トマト・レタス）を発表</li>
+            <li data-i18n="section.home.alerts_t1">2025/01/31: 農地BエリアのNDVI指標が上昇傾向</li>
+            <li data-i18n="section.home.alerts_t2">2025/01/29: 台風接近に伴う強風注意報 ( 地域X )</li>
+            <li data-i18n="section.home.alerts_t3">2025/01/27: 農地Dにおける土壌pH改善の兆候検出</li>
+            <li data-i18n="section.home.alerts_t4">2025/01/25: 農地Mで輪作効果向上が確認</li>
+            <li data-i18n="section.home.alerts_t5">2025/01/20: 新規作物試験結果（トマト・レタス）を発表</li>
           </ul>
         </section>
 
@@ -85,9 +107,7 @@ const Home: React.FC = () => {
               <select id="country" onChange={() => alert('国が変更されました')}>
                 <option value="">指定なし</option>
               </select>
-              <label htmlFor="prefecture">
-                都道府県/州:
-              </label>
+              <label htmlFor="prefecture">都道府県/州:</label>
               <select id="prefecture">
                 <option value="">指定なし</option>
               </select>
@@ -155,30 +175,31 @@ const Home: React.FC = () => {
               検索
             </button>
           </div>
-          <div id="map" className="map-placeholder"></div>
-          <h3>検索結果</h3>
+          {/* Leaflet map initialization area for 農地検索 */}
+          <div id="map" ref={mapRef} style={{ height: '300px', width: '100%' }}></div>
+          <h3 data-i18n="section.search.result" >検索結果</h3>
           <div className="card-grid" id="searchResults"></div>
         </section>
 
         <section id="mypage">
           <h2 data-i18n="section.mypage.title">投資ポートフォリオ</h2>
-          <h3>投資中の農地</h3>
+          <h3 data-i18n="section.mypage.subtitle">投資中の農地</h3>
           <table>
             <thead>
               <tr>
-                <th>農地名</th>
-                <th>投資額</th>
-                <th>現在価値</th>
-                <th>予測ROI</th>
+                <th data-i18n="section.mypage.t1">農地名</th>
+                <th data-i18n="section.mypage.t2">投資額</th>
+                <th data-i18n="section.mypage.t3">現在価値</th>
+                <th data-i18n="section.mypage.t4">予測ROI</th>
               </tr>
             </thead>
             <tbody id="investedFarmsTable"></tbody>
           </table>
           <br />
-          <h3>ウォッチリスト</h3>
+          <h3 data-i18n="section.mypage.watchlist">ウォッチリスト</h3>
           <ul id="watchlist"></ul>
           <br />
-          <h3>レポート一覧</h3>
+          <h3 data-i18n="section.mypage.reportlist">レポート一覧</h3>
           <ul className="list-group">
             <li className="list-group-item d-flex flex-column align-items-center">
               <a href="#" className="btn btn-secondary mb-2">2025/01/15 レポートダウンロード</a>
