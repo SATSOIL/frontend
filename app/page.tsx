@@ -50,26 +50,26 @@ const Home: React.FC = () => {
           <br />
           <h3 data-i18n="section.home.recommended">注目の農地</h3>
           <div className="card-grid">
-            <div className="card" onClick={() => alert('農地Aの詳細画面に遷移')}>
+            <div className="card">
               <img src="https://placehold.jp/800x400?text=Farm+A" alt="農地A" />
-              <div className="title">農地A</div>
-              <div className="subtitle">
+              <div className="title" data-i18n="section.card_grid_1">農地A</div>
+              <div className="subtitle" data-i18n="section.card_grid_sub1">
                 予想ROI : 8%<br />
                 洪水リスク：低
               </div>
             </div>
-            <div className="card" onClick={() => alert('農地Bの詳細画面に遷移')}>
+            <div className="card">
               <img src="https://placehold.jp/800x400?text=Farm+B" alt="農地B" />
-              <div className="title">農地B</div>
-              <div className="subtitle">
+              <div className="title" data-i18n="section.card_grid_2">農地B</div>
+              <div className="subtitle" data-i18n="section.card_grid_sub2">
                 予想ROI : 10%<br />
                 洪水リスク：中
               </div>
             </div>
-            <div className="card" onClick={() => alert('農地Cの詳細画面に遷移')}>
+            <div className="card">
               <img src="https://placehold.jp/800x400?text=Farm+C" alt="農地C" />
-              <div className="title">農地C</div>
-              <div className="subtitle">
+              <div className="title" data-i18n="section.card_grid_3">農地C</div>
+              <div className="subtitle" data-i18n="section.card_grid_sub3">
                 予想ROI : 6%<br />
                 病害虫リスク：低
               </div>
@@ -90,36 +90,65 @@ const Home: React.FC = () => {
           <h2 data-i18n="section.search.title">農地検索</h2>
           <TabContainer />
           <div id="simpleSearch">
-            <div className="filter-area">
-              <label htmlFor="regionGroup" data-i18n="section.search.regionGroup">
-                地域グループ:
-              </label>
-              <select id="regionGroup" onChange={() => alert('地域グループが変更されました')}>
-                <option value="">指定なし</option>
-                <option value="Asia">Asia</option>
-                <option value="Africa">Africa</option>
-                <option value="Europe">Europe</option>
-                <option value="NorthAmerica">North America</option>
-                <option value="SouthAmerica">South America</option>
-                <option value="Oceania">Oceania</option>
-              </select>
-              <label htmlFor="country">国:</label>
-              <select id="country" onChange={() => alert('国が変更されました')}>
-                <option value="">指定なし</option>
-              </select>
-              <label htmlFor="prefecture">都道府県/州:</label>
-              <select id="prefecture">
-                <option value="">指定なし</option>
-              </select>
-              <label htmlFor="regionDetail" data-i18n="section.search.regionDetail">
-                地域詳細:
-              </label>
-              <input type="text" id="regionDetail" placeholder="例 : Tokyo, Kenya" />
-              <label htmlFor="minScore" data-i18n="section.search.evalRange">
-                評価スコア範囲:
-              </label>
-              <input type="number" id="minScore" placeholder="下限" min="0" max="100" />
-              <input type="number" id="maxScore" placeholder="上限" min="0" max="100" />
+            <div className="filter-area flex flex-row items-center gap-4 p-4">
+              <div className="flex flex-col">
+                <label htmlFor="regionGroup" data-i18n="section.search.regionGroup">
+                  地域グループ:
+                </label>
+                <select id="regionGroup" className="w-full p-2 border rounded">
+                  <option value="" data-i18n="section.search.region.none">指定なし</option>
+                  <option value="Asia">Asia</option>
+                  <option value="Africa">Africa</option>
+                  <option value="Europe">Europe</option>
+                  <option value="NorthAmerica">North America</option>
+                  <option value="SouthAmerica">South America</option>
+                  <option value="Oceania">Oceania</option>
+                </select>
+              </div>
+
+              <div className="flex flex-col">
+                <label htmlFor="country" data-i18n="simplesearch_country">Country:</label>
+                <select id="country" className="w-full p-2 border rounded">
+                  <option value="" data-i18n="simplesearch_country_nonassign">指定なし</option>
+                </select>
+              </div>
+
+              <div className="flex flex-col">
+                <label htmlFor="prefecture" data-i18n="simplesearch_state">Prefecture/State:</label>
+                <select id="prefecture" className="w-full p-2 border rounded">
+                  <option value="" data-i18n="simplesearch_state_nonassign">指定なし</option>
+                </select>
+              </div>
+
+              <div className="flex flex-col">
+                <label htmlFor="regionDetail" data-i18n="section.search.regionDetail">
+                  地域詳細:
+                </label>
+                <input 
+                  type="text" 
+                  id="regionDetail" 
+                  placeholder="例 : Tokyo, Kenya" 
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+
+              {/* Updated evaluation score range to display elements horizontally */}
+              <div className="flex items-center gap-2">
+                <label htmlFor="minScore" data-i18n="section.search.evalRange">
+                  評価スコア範囲:
+                </label>
+                <select className="p-2 border rounded">
+                  <option>下限</option>
+                </select>
+                <input
+                  type="number"
+                  id="minScore"
+                  className="w-16 p-2 border rounded"
+                  min="0"
+                  max="100"
+                  defaultValue="1"
+                />
+              </div>
             </div>
           </div>
           <div id="detailedSearch" style={{ display: 'none' }}>
@@ -128,33 +157,31 @@ const Home: React.FC = () => {
                 土壌pH:
               </label>
               <select id="soil">
-                <option value="">指定なし</option>
-                <option value="low"> ~ 5.5 (酸性寄り)</option>
-                <option value="medium">5.5 ~ 6.5 (中性)</option>
-                <option value="high">6.5 ~ (アルカリ寄り)</option>
+                <option value=""  data-i18n="section.soil.ph">指定なし</option>
+                <option value="low"> ~ 5.5 </option>
+                <option value="medium">5.5 ~ 6.5 </option>
+                <option value="high">6.5 ~ </option>
               </select>
               <label htmlFor="floodRisk" data-i18n="section.search.floodRisk">
                 洪水リスク:
               </label>
               <select id="floodRisk">
-                <option value="">指定なし</option>
-                <option value="low">低</option>
-                <option value="medium">中</option>
-                <option value="high">高</option>
+                <option value="" data-i18n="section.flood.lisk">指定なし</option>
+                <option value="low" data-i18n="section.flood_low">低</option>
+                <option value="medium" data-i18n="section.flood_middle">中</option>
+                <option value="high" data-i18n="section.flood_high">高</option>
               </select>
               <label htmlFor="cropType" data-i18n="section.search.crop">
                 作物:
               </label>
               <select id="cropType">
-                <option value="">指定なし</option>
-                <option value="rice">米</option>
-                <option value="wheat">小麦</option>
-                <option value="soy">大豆</option>
-                <option value="tomato">トマト</option>
-                <option value="lettuce">レタス</option>
-                <option value="cucumber">キュウリ</option>
-                <option value="pepper">ピーマン</option>
-                <option value="cotton">綿</option>
+                <option value="" data-i18n="section.search.crop_none">指定なし</option>
+                <option value="rice" data-i18n="section.search.crop_rice">米</option>
+                <option value="wheat" data-i18n="section.search.crop_flowr">小麦</option>
+                <option value="soy" data-i18n="section.search.crop_soy">大豆</option>
+                <option value="tomato" data-i18n="section.search.crop_tomato">トマト</option>
+                <option value="lettuce" data-i18n="section.search.crop_lettuce">レタス</option>
+                <option value="cotton" data-i18n="section.search.crop_cotton">綿</option>
               </select>
               <label htmlFor="waterSupply" data-i18n="section.search.irrigation">
                 灌漑設備充実度:
@@ -171,13 +198,13 @@ const Home: React.FC = () => {
             </div>
           </div>
           <div className="filter-submit">
-            <button className="btn" onClick={() => alert('検索ボタンが押されました')} data-i18n="section.search.search">
+            <button className="btn" data-i18n="section.search.search">
               検索
             </button>
           </div>
           {/* Leaflet map initialization area for 農地検索 */}
           <div id="map" ref={mapRef} style={{ height: '300px', width: '100%' }}></div>
-          <h3 data-i18n="section.search.result" >検索結果</h3>
+          <h3 data-i18n="section.search.result">検索結果</h3>
           <div className="card-grid" id="searchResults"></div>
         </section>
 
