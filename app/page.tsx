@@ -7,6 +7,13 @@ import { updateLanguage } from '../utils/translations';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'leaflet/dist/leaflet.css';
 import './globals.css';
+import dynamic from 'next/dynamic';
+
+const MapWithPolygon = dynamic(() => import('./components/MapWithPolygon'), { ssr: false });
+
+function dmsToDecimal(degrees: number, minutes: number, seconds: number): number {
+  return degrees + (minutes/60) + (seconds/3600);
+}
 
 const Home: React.FC = () => {
   const [currentLang, setCurrentLang] = useState<'ja' | 'en'>('ja');
@@ -24,18 +31,35 @@ const Home: React.FC = () => {
   }, [currentLang]);
 
   useEffect(() => {
-    import('leaflet').then((L) => {
+    const initMap = async () => {
+      const L = (await import('leaflet')).default;
+      
       if (mapRef.current) {
-        const map = L.map(mapRef.current, {
-          center: [35.6895, 139.6917],
-          zoom: 10,
+        const map = L.map(mapRef.current).setView([43.0621, 141.3544], 6);
+  
+        // 衛星画像タイルレイヤーを追加
+        L.tileLayer(
+          'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+          {
+            maxZoom: 19,
+            attribution: 'Tiles &copy; Esri'
+          }
+        ).addTo(map);
+  
+        // リサイズ対応
+        const resizeObserver = new ResizeObserver(() => {
+          map.invalidateSize();
         });
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution:
-            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        }).addTo(map);
+        resizeObserver.observe(mapRef.current);
+  
+        return () => {
+          resizeObserver.disconnect();
+          map.remove();
+        };
       }
-    });
+    };
+  
+    initMap();
   }, []);
 
   return (
@@ -51,7 +75,15 @@ const Home: React.FC = () => {
           <h3 data-i18n="section.home.recommended">注目の農地</h3>
           <div className="card-grid">
             <div className="card">
-              <img src="https://placehold.jp/800x400?text=Farm+A" alt="農地A" />
+              <MapWithPolygon 
+                polygonCoordinates={[
+                  [dmsToDecimal(43, 1, 44), dmsToDecimal(141, 38, 45)],
+                  [dmsToDecimal(43, 2, 13), dmsToDecimal(141, 38, 16)],
+                  [dmsToDecimal(43, 1, 53), dmsToDecimal(141, 37, 36)],
+                  [dmsToDecimal(43, 1, 23), dmsToDecimal(141, 38, 4)],
+                ]}
+                style={{ height: '400px', width: '350px' }}
+              />
               <div className="title" data-i18n="section.card_grid_1">農地A</div>
               <div className="subtitle" data-i18n="section.card_grid_sub1">
                 予想ROI : 8%<br />
@@ -59,7 +91,15 @@ const Home: React.FC = () => {
               </div>
             </div>
             <div className="card">
-              <img src="https://placehold.jp/800x400?text=Farm+B" alt="農地B" />
+              <MapWithPolygon 
+                polygonCoordinates={[
+                  [dmsToDecimal(43, 51, 14), dmsToDecimal(144, 31, 4)],
+                  [dmsToDecimal(43, 51, 14), dmsToDecimal(144, 30, 26)],
+                  [dmsToDecimal(43, 51, 30), dmsToDecimal(144, 30, 26)],
+                  [dmsToDecimal(43, 51, 30), dmsToDecimal(144, 31, 4)],
+                ]}
+                style={{ height: '400px', width: '350px' }}
+              />
               <div className="title" data-i18n="section.card_grid_2">農地B</div>
               <div className="subtitle" data-i18n="section.card_grid_sub2">
                 予想ROI : 10%<br />
@@ -67,7 +107,15 @@ const Home: React.FC = () => {
               </div>
             </div>
             <div className="card">
-              <img src="https://placehold.jp/800x400?text=Farm+C" alt="農地C" />
+              <MapWithPolygon 
+                polygonCoordinates={[
+                  [dmsToDecimal(43, 50, 0), dmsToDecimal(144, 30, 24)],
+                  [dmsToDecimal(43, 52, 0), dmsToDecimal(144, 30, 24)],
+                  [dmsToDecimal(43, 52, 0), dmsToDecimal(144, 33, 40)],
+                  [dmsToDecimal(43, 50, 0), dmsToDecimal(144, 33, 40)],
+                ]}
+                style={{ height: '400px', width: '350px' }}
+              />
               <div className="title" data-i18n="section.card_grid_3">農地C</div>
               <div className="subtitle" data-i18n="section.card_grid_sub3">
                 予想ROI : 6%<br />
@@ -138,7 +186,7 @@ const Home: React.FC = () => {
                   評価スコア範囲:
                 </label>
                 <select className="p-2 border rounded">
-                  <option>下限</option>
+                  <option data-i18n="section.evalRange.lower">下限</option>
                 </select>
                 <input
                   type="number"
@@ -203,7 +251,11 @@ const Home: React.FC = () => {
             </button>
           </div>
           {/* Leaflet map initialization area for 農地検索 */}
-          <div id="map" ref={mapRef} style={{ height: '300px', width: '100%' }}></div>
+          <div
+            id="map"
+            ref={mapRef}
+            style={{ height: '300px', width: '100%', background: 'none' }}
+          ></div>
           <h3 data-i18n="section.search.result">検索結果</h3>
           <div className="card-grid" id="searchResults"></div>
         </section>
@@ -229,11 +281,11 @@ const Home: React.FC = () => {
           <h3 data-i18n="section.mypage.reportlist">レポート一覧</h3>
           <ul className="list-group">
             <li className="list-group-item d-flex flex-column align-items-center">
-              <a href="#" className="btn btn-secondary mb-2">2025/01/15 レポートダウンロード</a>
+              <a href="#" className="btn btn-secondary mb-2" data-i18n="section.reportdownload.1">2025/01/15 レポートダウンロード</a>
               <img src="https://placehold.jp/300x400?text=Report+Preview" alt="レポートプレビュー" className="img-fluid" />
             </li>
             <li className="list-group-item d-flex flex-column align-items-center">
-              <a href="#" className="btn btn-secondary mb-2">2024/12/30 レポートダウンロード</a>
+              <a href="#" className="btn btn-secondary mb-2" data-i18n="section.reportdownload.2">2024/12/30 レポートダウンロード</a>
               <img src="https://placehold.jp/300x400?text=Report+Preview" alt="レポートプレビュー" className="img-fluid" />
             </li>
           </ul>

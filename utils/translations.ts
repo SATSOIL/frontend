@@ -64,6 +64,9 @@ export const translations = {
     "section.search.region.none":"指定なし",
     "section.soil.ph":"指定なし",
     "section.flood.lisk":"指定なし",
+    "section.evalRange.lower":"下限",
+    "section.reportdownload.1":"レポートダウンロード",
+    "section.reportdownload.2":"レポートダウンロード",
 
   },
   en: {
@@ -131,6 +134,9 @@ export const translations = {
     "section.search.region.none":"none assign",
     "section.soil.ph":"none assign",
     "section.flood.lisk":"non assign",
+    "section.evalRange.lower":"lower",
+    "section.reportdownload.1":"Report Download",
+    "section.reportdownload.2":"Report Download",
 
   }
 };
