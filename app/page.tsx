@@ -26,6 +26,17 @@ const Home: React.FC = () => {
     }
   };
 
+  const [activeSection, setActiveSection] = useState('home');
+  const [currentImageYear, setCurrentImageYear] = useState(2020);
+
+  const handleCardClick = (farmId: string) => {
+    setActiveSection(`${farmId}Detail`);
+  };
+  
+  const changeFarmAImage = (year: number) => {
+    setCurrentImageYear(year);
+  };
+
   useEffect(() => {
     updateLanguage(currentLang);
   }, [currentLang]);
@@ -66,7 +77,7 @@ const Home: React.FC = () => {
     <div>
       <Header setLanguage={handleSetLanguage} />
       <main>
-        <section id="home" className="active">
+      <section id="home" className={activeSection === 'home' ? 'active' : ''}>
           <h2 data-i18n="section.home.title">ダッシュボード</h2>
           <p data-i18n="section.home.text">
             ようこそ。SATSOILは最新の農地投資市場情報、注目案件および各種通知を提供する統合プラットフォームです。
@@ -74,7 +85,7 @@ const Home: React.FC = () => {
           <br />
           <h3 data-i18n="section.home.recommended">注目の農地</h3>
           <div className="card-grid">
-            <div className="card">
+          <div className="card" onClick={() => handleCardClick('farmA')}>
               <MapWithPolygon 
                 polygonCoordinates={[
                   [dmsToDecimal(43, 1, 44), dmsToDecimal(141, 38, 45)],
@@ -290,6 +301,188 @@ const Home: React.FC = () => {
             </li>
           </ul>
         </section>
+        {/* 農地A詳細セクション */}
+        <section id="farmADetail" className={activeSection === 'farmADetail' ? 'active' : ''}>
+          <h2>農地A 詳細情報</h2>
+          <p>所在地：北海道・札幌市 / 面積：2.3 ha / オーナー：〇〇ファーム<br />
+             潜在能力スコア：82（最適な土壌pHおよび輪作効果を反映）</p>
+          <div className="detail-container">
+            <div className="detail-image-area">
+              <h3>衛星タイムラプス</h3>
+              <img 
+                id="farmAImage" 
+                src={`https://placehold.jp/800x400?text=FarmA+${currentImageYear}`} 
+                alt={`FarmA ${currentImageYear}`} 
+              />
+              <br/>
+              <div className="button-group">
+                {[2020, 2021, 2022].map(year => (
+                  <button 
+                    key={year}
+                    className={`btn btn-secondary ${currentImageYear === year ? 'active' : ''}`}
+                    onClick={() => changeFarmAImage(year)}
+                  >
+                    {year}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="detail-info-area">
+              <div className="risk-container">
+                <h3>リスク指標</h3>
+                <p>洪水リスク：低</p>
+                <p>土壌浸食リスク：低</p>
+                <p>病害虫リスク：中</p>
+              </div>
+              <div className="ndvi-container">
+                <h3>NDVI 推移</h3>
+                <img src="https://placehold.jp/600x300?text=FarmA+NDVI+Graph" alt="FarmA NDVI Graph" />
+                <p>平均 NDVI：0.65（比較的安定）</p>
+              </div>
+              <div className="simulation-container">
+                <h3>投資シミュレーション</h3>
+                <p id="farmASimulationResult">
+                  基準ROI：8%<br />
+                  輪作最適化効果：＋2%<br />
+                  生産管理改善効果：＋2%<br />
+                  先物価格調整：＋0.5%<br />
+                  --------------<br />
+                  予測ROI：12.5%
+                </p>
+                <br/>
+                <div className="button-group">
+                  <button className="btn" onClick={() => setActiveSection('ddReport')}>
+                    DDレポート生成
+                  </button>
+                  <button className="btn btn-secondary" onClick={() => setActiveSection('investFlow')}>
+                    投資手続きへ
+                  </button>
+                </div>
+              </div>
+              <div style={{marginTop: '10px'}}>
+                <button className="btn" onClick={() => alert('ウォッチリストに追加しました')}>
+                  ウォッチリストに追加
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* DDレポートセクション */}
+        <section id="ddReport" className={activeSection === 'ddReport' ? 'active' : ''}>
+          <h2>DDレポート</h2>
+          <p>こちらは、投資判断に必要な解析データと詳細な分析コメントをまとめたレポートです。</p>
+          <div className="dd-report-container">
+            <h3>1. 農地概要</h3>
+            <p>所在地：北海道・札幌市</p>
+            <p>面積：2.3 ha</p>
+            <p>オーナー：〇〇ファーム</p>
+            <p>潜在能力スコア：82</p>
+
+            <h3>2. 衛星解析</h3>
+            <p>平均 NDVI：0.60～0.65（安定推移）</p>
+            <p>洪水リスク：低～中</p>
+            <div className="satellite-image">
+              <img 
+                src="https://placehold.jp/800x400?text=Satellite+Analysis+Summary" 
+                alt="Satellite Analysis" 
+                className="w-full"
+              />
+            </div>
+
+            <h3>3. 土壌・気候データ</h3>
+            <p>土壌pH：6.0～6.5 / 有機物量：高め</p>
+            <p>年間降水量：約1200mm / 日照時間：2000h</p>
+
+            <h3>4. リスク評価と収益性</h3>
+            <ul>
+              <li>病害虫リスク：低～中</li>
+              <li>土壌浸食リスク：低</li>
+              <li>収量予測：1000～1200 kg/ha</li>
+              <li>価格変動：過去3年の変動±5%</li>
+            </ul>
+
+            <h3>5. 分析コメント</h3>
+            <p>全体としてリスクは低水準にあり、輪作最適化と生産管理の徹底により収益性の向上が期待されます。
+               商品先物価格および干ばつリスクを考慮した定期モニタリングを推奨いたします。</p>
+          </div>
+          <div className="button-group mt-4">
+            <button 
+              className="btn btn-secondary" 
+              onClick={() => setActiveSection('farmADetail')}
+            >
+              戻る
+            </button>
+          </div>
+        </section>
+         {/* 投資手続きセクション */}
+         <section id="investFlow" className={activeSection === 'investFlow' ? 'active' : ''}>
+          <h2>投資手続き</h2>
+          <p>以下のステップに従い、投資手続きを進めてください。</p>
+          <div className="investment-flow-container">
+            <ol className="investment-steps">
+              <li className="mb-4">
+                <h4>本人確認</h4>
+                <p>身分証明書のアップロードおよび本人確認書類の提出が必要です。</p>
+                <button 
+                  className="btn btn-secondary"
+                  onClick={() => alert('本人確認書類アップロード画面へ')}
+                >
+                  アップロード
+                </button>
+              </li>
+              <li className="mb-4">
+                <h4>契約書類の確認</h4>
+                <p>電子契約書の内容をご確認の上、電子署名を実行してください。</p>
+                <button 
+                  className="btn btn-secondary"
+                  onClick={() => alert('電子署名画面へ')}
+                >
+                  電子署名
+                </button>
+              </li>
+              <li className="mb-4">
+                <h4>投資額設定</h4>
+                <p>適正投資額の目安：<strong>1,000,000円</strong></p>
+                <div className="input-group">
+                  <label htmlFor="investAmount">投資額 (円):</label>
+                  <input 
+                    type="number" 
+                    id="investAmount" 
+                    defaultValue={1000000}
+                    min={100000}
+                    step={10000}
+                    className="form-control"
+                  />
+                </div>
+                <button 
+                  className="btn btn-secondary mt-2"
+                  onClick={() => alert('投資額を確定しました')}
+                >
+                  確定
+                </button>
+              </li>
+              <li className="mb-4">
+                <h4>お支払い</h4>
+                <p>銀行振込、オンライン決済、クレジットカードなど各種決済に対応しております。</p>
+                <button 
+                  className="btn"
+                  onClick={() => alert('決済画面へ')}
+                >
+                  決済へ進む
+                </button>
+              </li>
+            </ol>
+          </div>
+          <div className="button-group mt-4">
+            <button 
+              className="btn btn-secondary"
+              onClick={() => setActiveSection('farmADetail')}
+            >
+              キャンセル
+            </button>
+            </div>
+          </section>
       </main>
     </div>
   );
