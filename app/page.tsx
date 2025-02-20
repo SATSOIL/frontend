@@ -15,6 +15,28 @@ function dmsToDecimal(degrees: number, minutes: number, seconds: number): number
   return degrees + (minutes/60) + (seconds/3600);
 }
 
+const INVESTED_FARMS = [
+  { id: 1, name: '農地A', amount: 1500000, currentValue: 1620000, roi: '+8%' },
+  { id: 2, name: '農地B', amount: 2000000, currentValue: 2160000, roi: '+8%' },
+  { id: 3, name: '農地C', amount: 1200000, currentValue: 1296000, roi: '+8%' },
+];
+
+interface SearchResult {
+  name: string;
+  region: string;
+  soilPH: number;
+  soilScore: number;
+  rotationScore: number;
+  potential: number;
+  risk: string;
+  crop: string;
+  roi: string;
+  waterSupply: number;
+  accessibility: number;
+  cropDiversity: number;
+  img: string;
+}
+
 const Home: React.FC = () => {
   const [currentLang, setCurrentLang] = useState<'ja' | 'en'>('ja');
   const mapRef = useRef<HTMLDivElement>(null);
@@ -24,6 +46,66 @@ const Home: React.FC = () => {
     } else {
       console.warn(`Unsupported language: ${lang}`);
     }
+  };
+
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  type CountryName = 'America' | 'Japan' | 'China' | 'Russia';
+  type RegionsType = {
+    [K in CountryName]: string[];
+  };
+  
+  const handleSearch = () => {
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+    const crops = ["Rice", "Wheat", "Soybean", "Tomato", "Lettuce", "Cucumber", "Pepper", "Cotton"];
+    const risks = ["Low", "Medium", "High"];
+    const countries: CountryName[] = ["America", "Japan", "China", "Russia"];
+    const regions: RegionsType = {
+      America: ["California", "Texas", "New York"],
+      Japan: ["Hokkaido", "Ibaraki", "Kumamoto"],
+      China: ["Beijing", "Shanghai", "Guangdong"],
+      Russia: ["Moscow", "Saint Petersburg", "Siberia"]
+    };
+  
+    const dummyData: SearchResult[] = letters.map((letter, i) => {
+      const soilPH = Number((Math.random() * 3 + 5).toFixed(1));
+      const soilScore = Math.max(0, 100 - Math.abs(6.5 - soilPH) * 20);
+      const rotationScore = Math.floor(Math.random() * 51) + 50;
+      const potentialScore = Math.floor((soilScore + rotationScore) / 2);
+      const crop = crops[i % crops.length];
+      const country = countries[Math.floor(Math.random() * countries.length)];
+      const region = regions[country][Math.floor(Math.random() * regions[country].length)];
+      
+      let roi;
+      switch(crop) {
+        case "Rice": roi = "8%"; break;
+        case "Wheat": roi = "10%"; break;
+        case "Soybean": roi = "12%"; break;
+        case "Tomato": roi = "9%"; break;
+        case "Lettuce": roi = "8%"; break;
+        case "Cucumber": roi = "9%"; break;
+        case "Pepper": roi = "10%"; break;
+        case "Cotton": roi = "11%"; break;
+        default: roi = "8%";
+      }
+  
+      return {
+        name: `Farm ${letter}`,
+        region: `${country} - ${region}`,
+        soilPH,
+        soilScore,
+        rotationScore,
+        potential: potentialScore,
+        risk: risks[i % risks.length],
+        crop,
+        roi,
+        waterSupply: Math.floor(Math.random() * 51) + 50,
+        accessibility: Math.floor(Math.random() * 51) + 50,
+        cropDiversity: Math.floor(Math.random() * 51) + 50,
+        img: `https://placehold.jp/800x400?text=Farm+${letter}`
+      };
+    });
+  
+    setSearchResults(dummyData);
   };
 
   const [activeSection, setActiveSection] = useState('home');
@@ -37,6 +119,9 @@ const Home: React.FC = () => {
     setCurrentImageYear(year);
   };
 
+
+
+  
   useEffect(() => {
     updateLanguage(currentLang);
   }, [currentLang]);
@@ -73,6 +158,25 @@ const Home: React.FC = () => {
     initMap();
   }, []);
 
+  const [watchlist, setWatchlist] = useState<string[]>([]);
+
+  // ウォッチリストに追加する関数
+  const addToWatchlist = (farmName: string) => {
+    if (!watchlist.includes(farmName)) {
+      setWatchlist([...watchlist, farmName]);
+      alert(`${farmName}をウォッチリストに追加しました`);
+    } else {
+      alert('この農地は既にウォッチリストに追加されています');
+    }
+  };
+
+  // ウォッチリストから削除する関数
+  const removeFromWatchlist = (farmName: string) => {
+    setWatchlist(watchlist.filter(name => name !== farmName));
+    alert(`${farmName}をウォッチリストから削除しました`);
+  };
+
+ 
   return (
     <div>
       <Header setLanguage={handleSetLanguage} />
@@ -145,16 +249,16 @@ const Home: React.FC = () => {
           </ul>
         </section>
 
-        <section id="search">
+        <section id="search" className={activeSection === 'search' ? 'active' : ''}>
           <h2 data-i18n="section.search.title">農地検索</h2>
           <TabContainer />
-          <div id="simpleSearch">
-            <div className="filter-area flex flex-row items-center gap-4 p-4">
-              <div className="flex flex-col">
-                <label htmlFor="regionGroup" data-i18n="section.search.regionGroup">
-                  地域グループ:
-                </label>
-                <select id="regionGroup" className="w-full p-2 border rounded">
+          
+          {/* Updated simple search UI */}
+          <div id="simpleSearch" className="card p-4 mb-4">
+            <div className="row g-3">
+              <div className="col-md-3">
+                <label htmlFor="regionGroup" data-i18n="section.search.regionGroup">地域グループ:</label>
+                <select id="regionGroup" className="form-select">
                   <option value="" data-i18n="section.search.region.none">指定なし</option>
                   <option value="Asia">Asia</option>
                   <option value="Africa">Africa</option>
@@ -164,130 +268,164 @@ const Home: React.FC = () => {
                   <option value="Oceania">Oceania</option>
                 </select>
               </div>
-
-              <div className="flex flex-col">
+              <div className="col-md-3">
                 <label htmlFor="country" data-i18n="simplesearch_country">Country:</label>
-                <select id="country" className="w-full p-2 border rounded">
+                <select id="country" className="form-select">
                   <option value="" data-i18n="simplesearch_country_nonassign">指定なし</option>
                 </select>
               </div>
-
-              <div className="flex flex-col">
+              <div className="col-md-3">
                 <label htmlFor="prefecture" data-i18n="simplesearch_state">Prefecture/State:</label>
-                <select id="prefecture" className="w-full p-2 border rounded">
+                <select id="prefecture" className="form-select">
                   <option value="" data-i18n="simplesearch_state_nonassign">指定なし</option>
                 </select>
               </div>
-
-              <div className="flex flex-col">
-                <label htmlFor="regionDetail" data-i18n="section.search.regionDetail">
-                  地域詳細:
-                </label>
-                <input 
-                  type="text" 
-                  id="regionDetail" 
-                  placeholder="例 : Tokyo, Kenya" 
-                  className="w-full p-2 border rounded"
-                />
+              <div className="col-md-3">
+                <label htmlFor="regionDetail" data-i18n="section.search.regionDetail">地域詳細:</label>
+                <input type="text" id="regionDetail" placeholder="例 : Tokyo, Kenya" className="form-control"/>
               </div>
-
-              {/* Updated evaluation score range to display elements horizontally */}
-              <div className="flex items-center gap-2">
-                <label htmlFor="minScore" data-i18n="section.search.evalRange">
-                  評価スコア範囲:
-                </label>
-                <select className="p-2 border rounded">
-                  <option data-i18n="section.evalRange.lower">下限</option>
+              <div className="col-md-3">
+                <label htmlFor="minScore" data-i18n="section.search.evalRange">評価スコア範囲:</label>
+                <input type="number" id="minScore" className="form-control" min="0" max="100" defaultValue="1"/>
+              </div>
+            </div>
+          </div>
+        
+          {/* Updated detailed search UI */}
+          <div id="detailedSearch" className="card p-4 mb-4" style={{ display: 'none' }}>
+            <div className="row g-3">
+              <div className="col-md-2">
+                <label htmlFor="soil" data-i18n="section.search.soil">土壌pH:</label>
+                <select id="soil" className="form-select">
+                  <option value=""  data-i18n="section.soil.ph">指定なし</option>
+                  <option value="low"> ~ 5.5 </option>
+                  <option value="medium">5.5 ~ 6.5 </option>
+                  <option value="high">6.5 ~ </option>
                 </select>
-                <input
-                  type="number"
-                  id="minScore"
-                  className="w-16 p-2 border rounded"
-                  min="0"
-                  max="100"
-                  defaultValue="1"
-                />
+              </div>
+              <div className="col-md-2">
+                <label htmlFor="floodRisk" data-i18n="section.search.floodRisk">洪水リスク:</label>
+                <select id="floodRisk" className="form-select">
+                  <option value="" data-i18n="section.flood.lisk">指定なし</option>
+                  <option value="low" data-i18n="section.flood_low">低</option>
+                  <option value="medium" data-i18n="section.flood_middle">中</option>
+                  <option value="high" data-i18n="section.flood_high">高</option>
+                </select>
+              </div>
+              <div className="col-md-2">
+                <label htmlFor="cropType" data-i18n="section.search.crop">作物:</label>
+                <select id="cropType" className="form-select">
+                  <option value="" data-i18n="section.search.crop_none">指定なし</option>
+                  <option value="rice" data-i18n="section.search.crop_rice">米</option>
+                  <option value="wheat" data-i18n="section.search.crop_flowr">小麦</option>
+                  <option value="soy" data-i18n="section.search.crop_soy">大豆</option>
+                  <option value="tomato" data-i18n="section.search.crop_tomato">トマト</option>
+                  <option value="lettuce" data-i18n="section.search.crop_lettuce">レタス</option>
+                  <option value="cotton" data-i18n="section.search.crop_cotton">綿</option>
+                </select>
+              </div>
+              <div className="col-md-2">
+                <label htmlFor="waterSupply" data-i18n="section.search.irrigation">灌漑設備充実度:</label>
+                <input type="number" id="waterSupply" placeholder="0 ~ 100" min="0" max="100" className="form-control"/>
+              </div>
+              <div className="col-md-2">
+                <label htmlFor="accessibility" data-i18n="section.search.accessibility">交通アクセス利便性:</label>
+                <input type="number" id="accessibility" placeholder="0 ~ 100" min="0" max="100" className="form-control"/>
+              </div>
+              <div className="col-md-2">
+                <label htmlFor="cropDiversity" data-i18n="section.search.cropVariety">作付け多様性:</label>
+                <input type="number" id="cropDiversity" placeholder="0 ~ 100" min="0" max="100" className="form-control"/>
               </div>
             </div>
           </div>
-          <div id="detailedSearch" style={{ display: 'none' }}>
-            <div className="filter-area">
-              <label htmlFor="soil" data-i18n="section.search.soil">
-                土壌pH:
-              </label>
-              <select id="soil">
-                <option value=""  data-i18n="section.soil.ph">指定なし</option>
-                <option value="low"> ~ 5.5 </option>
-                <option value="medium">5.5 ~ 6.5 </option>
-                <option value="high">6.5 ~ </option>
-              </select>
-              <label htmlFor="floodRisk" data-i18n="section.search.floodRisk">
-                洪水リスク:
-              </label>
-              <select id="floodRisk">
-                <option value="" data-i18n="section.flood.lisk">指定なし</option>
-                <option value="low" data-i18n="section.flood_low">低</option>
-                <option value="medium" data-i18n="section.flood_middle">中</option>
-                <option value="high" data-i18n="section.flood_high">高</option>
-              </select>
-              <label htmlFor="cropType" data-i18n="section.search.crop">
-                作物:
-              </label>
-              <select id="cropType">
-                <option value="" data-i18n="section.search.crop_none">指定なし</option>
-                <option value="rice" data-i18n="section.search.crop_rice">米</option>
-                <option value="wheat" data-i18n="section.search.crop_flowr">小麦</option>
-                <option value="soy" data-i18n="section.search.crop_soy">大豆</option>
-                <option value="tomato" data-i18n="section.search.crop_tomato">トマト</option>
-                <option value="lettuce" data-i18n="section.search.crop_lettuce">レタス</option>
-                <option value="cotton" data-i18n="section.search.crop_cotton">綿</option>
-              </select>
-              <label htmlFor="waterSupply" data-i18n="section.search.irrigation">
-                灌漑設備充実度:
-              </label>
-              <input type="number" id="waterSupply" placeholder="0 ~ 100" min="0" max="100" />
-              <label htmlFor="accessibility" data-i18n="section.search.accessibility">
-                交通アクセス利便性:
-              </label>
-              <input type="number" id="accessibility" placeholder="0 ~ 100" min="0" max="100" />
-              <label htmlFor="cropDiversity" data-i18n="section.search.cropVariety">
-                作付け多様性:
-              </label>
-              <input type="number" id="cropDiversity" placeholder="0 ~ 100" min="0" max="100" />
-            </div>
-          </div>
-          <div className="filter-submit">
-            <button className="btn" data-i18n="section.search.search">
-              検索
+        
+          {/* Updated simple search UI filter-submit */}
+          <div className="filter-submit mb-4 text-center">
+            <button 
+              className="btn btn-primary btn-lg rounded-pill"
+              onClick={handleSearch}  // ここにハンドラーを追加
+            >
+              Search
             </button>
           </div>
-          {/* Leaflet map initialization area for 農地検索 */}
-          <div
-            id="map"
-            ref={mapRef}
-            style={{ height: '300px', width: '100%', background: 'none' }}
-          ></div>
+        
+          <div id="map" ref={mapRef}></div>
           <h3 data-i18n="section.search.result">検索結果</h3>
-          <div className="card-grid" id="searchResults"></div>
+          <div className="search-results">
+            {searchResults.length === 0 ? (
+              <p>No farms found matching your criteria.</p>
+            ) : (
+              <div className="card-grid">
+                {searchResults.map((farm, index) => (
+                  <div 
+                    key={index} 
+                    className="card" 
+                    onClick={() => handleCardClick(farm.name)}
+                  >
+                    <img src={farm.img} alt={farm.name} />
+                    <div className="title">{farm.name}</div>
+                    <div className="subtitle">
+                      Region: {farm.region}<br />
+                      Expected ROI: {farm.roi} / Risk Level: {farm.risk}<br />
+                      Soil pH: {farm.soilPH} (Score: {farm.soilScore})<br />
+                      Main Crop: {farm.crop}<br />
+                      Potential Score: {farm.potential}<br />
+                      Irrigation: {farm.waterSupply} / Access: {farm.accessibility} / 
+                      Crop Diversity: {farm.cropDiversity}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </section>
 
-        <section id="mypage">
-          <h2 data-i18n="section.mypage.title">投資ポートフォリオ</h2>
-          <h3 data-i18n="section.mypage.subtitle">投資中の農地</h3>
-          <table>
-            <thead>
-              <tr>
-                <th data-i18n="section.mypage.t1">農地名</th>
-                <th data-i18n="section.mypage.t2">投資額</th>
-                <th data-i18n="section.mypage.t3">現在価値</th>
-                <th data-i18n="section.mypage.t4">予測ROI</th>
-              </tr>
-            </thead>
-            <tbody id="investedFarmsTable"></tbody>
-          </table>
+        {/* 投資ポートフォリオセクション */}
+        <section id="mypage" className={activeSection === 'mypage' ? 'active' : ''}>
+          <h2>投資ポートフォリオ</h2>
+          <div className="portfolio-container">
+            <h3>投資中の農地</h3>
+            <div className="table-responsive">
+              <table className="table table-hover">
+                <thead className="table-light">
+                  <tr>
+                    <th>農地名</th>
+                    <th>投資額</th>
+                    <th>現在価値</th>
+                    <th>予測ROI</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {INVESTED_FARMS.map(farm => (
+                    <tr key={farm.id}>
+                      <td>{farm.name}</td>
+                      <td>{farm.amount.toLocaleString()}円</td>
+                      <td>{farm.currentValue.toLocaleString()}円</td>
+                      <td>{farm.roi}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
           <br />
           <h3 data-i18n="section.mypage.watchlist">ウォッチリスト</h3>
-          <ul id="watchlist"></ul>
+            <ul className="watchlist">
+              {watchlist.map((farmName, index) => (
+                <li key={index} className="watchlist-item">
+                  <span>{farmName}</span>
+                  <button 
+                    className="btn btn-danger btn-sm"
+                    onClick={() => removeFromWatchlist(farmName)}
+                  >
+                    削除
+                  </button>
+                </li>
+              ))}
+              {watchlist.length === 0 && (
+                <li className="watchlist-empty">ウォッチリストは空です</li>
+              )}
+            </ul>          
           <br />
           <h3 data-i18n="section.mypage.reportlist">レポート一覧</h3>
           <ul className="list-group">
@@ -366,7 +504,18 @@ const Home: React.FC = () => {
               </div>
             </div>
           </div>
+          <div style={{marginTop: '10px'}}>
+          <button 
+            className="btn" 
+            onClick={() => addToWatchlist('農地A')} 
+            data-i18n="addWatchList"
+            disabled={watchlist.includes('農地A')}
+          >
+            {watchlist.includes('農地A') ? 'ウォッチリスト追加済み' : 'ウォッチリストに追加'}
+          </button>
+        </div>
         </section>
+
 
         {/* DDレポートセクション */}
         <section id="ddReport" className={activeSection === 'ddReport' ? 'active' : ''}>
