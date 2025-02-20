@@ -1,15 +1,16 @@
 /* ====================== リセット/ベース ====================== */
-
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
+
 body {
   font-family: 'Roboto', sans-serif;
   background: #f0f2f5;
   color: #333;
   margin: 0;
+  line-height: 1.6;
 }
 
 /* ====================== ヘッダー ====================== */
@@ -22,13 +23,16 @@ header {
   justify-content: space-between;
   align-items: center;
 }
-header .logo {
+
+.logo {
   font-size: 1.8rem;
   font-weight: bold;
 }
+
 .lang-switcher {
   margin: 5px;
 }
+
 .lang-switcher button {
   margin-right: 5px;
   padding: 6px 12px;
@@ -40,64 +44,52 @@ header .logo {
   border-radius: 4px;
   transition: background 0.3s;
 }
+
 .lang-switcher button:hover {
   background: rgba(255, 255, 255, 0.5);
 }
-header nav ul {
+
+nav ul {
   list-style: none;
   display: flex;
   gap: 20px;
 }
-header nav ul li {
+
+nav ul li {
   cursor: pointer;
   padding: 8px 12px;
   transition: background 0.3s;
   border-radius: 4px;
 }
-header nav ul li:hover {
+
+nav ul li:hover {
   background: rgba(255, 255, 255, 0.3);
 }
 
-/* ====================== メインコンテンツ ====================== */
+/* ====================== メインレイアウト ====================== */
 main {
   max-width: 1200px;
   margin: 30px auto;
   padding: 0 20px;
 }
+
 section {
   display: none;
+  margin-bottom: 40px;
 }
+
 section.active {
   display: block;
 }
 
-/* ====================== タブ式フィルタ ====================== */
-.tab-container {
-  margin-bottom: 10px;
-  text-align: center;
-}
-.tab {
-  padding: 10px 20px;
-  border: none;
-  background: #ddd;
-  cursor: pointer;
-  font-size: 1rem;
-  margin-right: 4px;
-  border-radius: 4px;
-  transition: background 0.3s;
-}
-.tab.active {
-  background: #4CA1AF;
-  color: #fff;
-}
-
-/* ====================== カード表示 ====================== */
+/* ====================== カードグリッド ====================== */
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 16px;
-  justify-items: center; /* カードを中央揃え */
+  gap: 20px;
+  margin: 20px 0;
 }
+
 .card {
   background: #fff;
   border-radius: 8px;
@@ -105,106 +97,93 @@ section.active {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   transition: transform 0.2s ease;
-  width: 100%; /* カードの幅を調整 */
 }
+
 .card:hover {
   transform: translateY(-4px);
 }
-.card img {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-  border-radius: 4px;
-}
+
 .card .title {
   font-weight: bold;
   margin: 10px 0 5px;
   font-size: 1.2rem;
 }
+
 .card .subtitle {
   color: #666;
-  font-size: 1rem;
+  font-size: 0.9rem;
   line-height: 1.5;
 }
 
-/* ====================== フィルタUI (Search) ====================== */
+/* ====================== 検索フィルター ====================== */
 .filter-area {
-  margin-bottom: 16px;
   background: #fff;
-  padding: 16px;
+  padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-.filter-area label {
-  min-width: 140px;
-  font-weight: bold;
-  margin-right: 8px;
-}
-.filter-area input,
-.filter-area select {
-  padding: 6px 10px;
-  margin-right: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-.filter-submit {
-  margin-top: 10px;
-  text-align: center;
+  margin-bottom: 20px;
 }
 
-/* ====================== Leaflet地図用スタイル ====================== */
+.filter-area label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.filter-area input,
+.filter-area select {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.filter-submit {
+  text-align: center;
+  margin: 20px 0;
+}
+
+/* ====================== Leaflet マップ ====================== */
 .leaflet-container {
   width: 100% !important;
   height: 100% !important;
   background: transparent !important;
+  z-index: 1;
 }
 
-/* カード内の地図用スタイル */
-.card .leaflet-container {
+#map {
+  position: relative;
   min-height: 400px;
+  margin: 20px 0;
   border-radius: 8px;
   overflow: hidden;
 }
 
-/* 検索エリアの地図用スタイル */
-#map .leaflet-container {
+.card .leaflet-container {
   min-height: 300px;
   border-radius: 8px;
-  overflow: hidden;
 }
 
-/* タイルレイヤーの表示を確実にする */
-.leaflet-tile {
-  visibility: visible !important;
-}
-
+.leaflet-tile,
 .leaflet-tile-container {
+  visibility: visible !important;
   opacity: 1 !important;
 }
 
-/* マップコントロールのz-index調整 */
 .leaflet-control-container .leaflet-top,
 .leaflet-control-container .leaflet-bottom {
-  z-index: 1000;
+  z-index: 999;
 }
 
-/* マップコンテナの背景設定 */
-#map, 
-[id^="leaflet-map-"],
-.map-placeholder {
-  background: transparent !important;
-  position: relative;
-}
-
-/* ====================== 詳細ページ系 ====================== */
+/* ====================== 詳細表示 ====================== */
 .detail-container {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: 20px;
+  margin-top: 20px;
 }
+
 .detail-image-area,
 .detail-info-area {
   background: #fff;
@@ -212,85 +191,19 @@ section.active {
   padding: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
-.detail-image-area {
-  flex: 1 1 450px;
-}
-.detail-info-area {
-  flex: 1 1 350px;
-}
-.detail-image-area img {
-  width: 100%;
-  border-radius: 4px;
-  margin-bottom: 12px;
-}
+
 .risk-container,
 .ndvi-container,
 .simulation-container {
   margin-bottom: 20px;
 }
-.risk-container h3,
-.ndvi-container h3,
-.simulation-container h3 {
-  font-size: 1.2rem;
-  margin-bottom: 8px;
-}
 
 /* ====================== DDレポート ====================== */
 .dd-report-container {
   background: #fff;
+  padding: 30px;
   border-radius: 8px;
-  padding: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin-top: 20px;
-}
-.dd-report-container h3 {
-  margin-top: 16px;
-  margin-bottom: 8px;
-  font-size: 1.2rem;
-}
-.dd-report-container ul {
-  list-style: disc;
-  margin-left: 20px;
-  margin-bottom: 16px;
-}
-
-/* ====================== 投資手続きフロー ====================== */
-#investFlow ol {
-  margin: 20px 0;
-  padding-left: 20px;
-}
-#investFlow li {
-  margin-bottom: 20px;
-}
-#investFlow li h4 {
-  margin-bottom: 8px;
-  font-size: 1rem;
-  font-weight: bold;
-}
-#investFlow input[type="number"] {
-  width: 150px;
-  padding: 6px 10px;
-  margin-left: 5px;
-  margin-right: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-/* ====================== テーブル (My Page) ====================== */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
-table th,
-table td {
-  border: 1px solid #ddd;
-  padding: 10px;
-  text-align: left;
-}
-table th {
-  background: #f2f2f2;
-  font-weight: bold;
 }
 
 /* ====================== ボタン ====================== */
@@ -298,43 +211,44 @@ table th {
   display: inline-block;
   background: #4CA1AF;
   color: #fff;
-  padding: 8px 16px;
+  padding: 10px 20px;
   border-radius: 4px;
-  text-decoration: none;
-  font-size: 1rem;
+  border: none;
   cursor: pointer;
   transition: background 0.3s;
-  border: none;
+  font-size: 1rem;
 }
+
 .btn:hover {
   background: #3B8D99;
 }
+
 .btn-secondary {
   background: #777;
 }
 
-/* 農地検索マップ用のスタイル */
-#map {
-  position: relative;
-  min-height: 300px;
-  margin: 20px 0;
-  border-radius: 8px;
-  overflow: hidden;
+.btn-secondary:hover {
+  background: #666;
 }
 
-#map .leaflet-container {
-  position: absolute !important;
-  top: 0;
-  left: 0;
-  width: 100% !important;
-  height: 100% !important;
-  background: transparent !important;
-}
+/* ====================== レスポンシブ対応 ====================== */
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
 
-.leaflet-tile {
-  visibility: visible !important;
-}
+  nav ul {
+    flex-direction: column;
+    align-items: center;
+  }
 
-.leaflet-tile-container {
-  opacity: 1 !important;
+  .detail-container {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-area {
+    padding: 15px;
+  }
 }
