@@ -55,7 +55,6 @@ const Home: React.FC = () => {
   };
   
   const handleSearch = () => {
-    const regionGroup = (document.getElementById("regionGroup") as HTMLSelectElement)!.value;
     const country = (document.getElementById("country") as HTMLSelectElement)!.value;
     const prefecture = (document.getElementById("prefecture") as HTMLSelectElement)!.value;
     const regionDetail = (document.getElementById("regionDetail") as HTMLInputElement)!.value;
