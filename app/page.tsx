@@ -21,7 +21,21 @@ const INVESTED_FARMS = [
   { id: 3, name: '農地C', amount: 1200000, currentValue: 1296000, roi: '+8%' },
 ];
 
-
+interface SearchResult {
+  name: string;
+  region: string;
+  soilPH: number;
+  soilScore: number;
+  rotationScore: number;
+  potential: number;
+  risk: string;
+  crop: string;
+  roi: string;
+  waterSupply: number;
+  accessibility: number;
+  cropDiversity: number;
+  img: string;
+}
 
 const Home: React.FC = () => {
   const [currentLang, setCurrentLang] = useState<'ja' | 'en'>('ja');
@@ -32,6 +46,66 @@ const Home: React.FC = () => {
     } else {
       console.warn(`Unsupported language: ${lang}`);
     }
+  };
+
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  type CountryName = 'America' | 'Japan' | 'China' | 'Russia';
+  type RegionsType = {
+    [K in CountryName]: string[];
+  };
+  
+  const handleSearch = () => {
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+    const crops = ["Rice", "Wheat", "Soybean", "Tomato", "Lettuce", "Cucumber", "Pepper", "Cotton"];
+    const risks = ["Low", "Medium", "High"];
+    const countries: CountryName[] = ["America", "Japan", "China", "Russia"];
+    const regions: RegionsType = {
+      America: ["California", "Texas", "New York"],
+      Japan: ["Hokkaido", "Ibaraki", "Kumamoto"],
+      China: ["Beijing", "Shanghai", "Guangdong"],
+      Russia: ["Moscow", "Saint Petersburg", "Siberia"]
+    };
+  
+    const dummyData: SearchResult[] = letters.map((letter, i) => {
+      const soilPH = Number((Math.random() * 3 + 5).toFixed(1));
+      const soilScore = Math.max(0, 100 - Math.abs(6.5 - soilPH) * 20);
+      const rotationScore = Math.floor(Math.random() * 51) + 50;
+      const potentialScore = Math.floor((soilScore + rotationScore) / 2);
+      const crop = crops[i % crops.length];
+      const country = countries[Math.floor(Math.random() * countries.length)];
+      const region = regions[country][Math.floor(Math.random() * regions[country].length)];
+      
+      let roi;
+      switch(crop) {
+        case "Rice": roi = "8%"; break;
+        case "Wheat": roi = "10%"; break;
+        case "Soybean": roi = "12%"; break;
+        case "Tomato": roi = "9%"; break;
+        case "Lettuce": roi = "8%"; break;
+        case "Cucumber": roi = "9%"; break;
+        case "Pepper": roi = "10%"; break;
+        case "Cotton": roi = "11%"; break;
+        default: roi = "8%";
+      }
+  
+      return {
+        name: `Farm ${letter}`,
+        region: `${country} - ${region}`,
+        soilPH,
+        soilScore,
+        rotationScore,
+        potential: potentialScore,
+        risk: risks[i % risks.length],
+        crop,
+        roi,
+        waterSupply: Math.floor(Math.random() * 51) + 50,
+        accessibility: Math.floor(Math.random() * 51) + 50,
+        cropDiversity: Math.floor(Math.random() * 51) + 50,
+        img: `https://placehold.jp/800x400?text=Farm+${letter}`
+      };
+    });
+  
+    setSearchResults(dummyData);
   };
 
   const [activeSection, setActiveSection] = useState('home');
@@ -267,16 +341,43 @@ const Home: React.FC = () => {
         
           {/* Updated simple search UI filter-submit */}
           <div className="filter-submit mb-4 text-center">
-            <button className="btn btn-primary btn-lg rounded-pill">
-              検索
+            <button 
+              className="btn btn-primary btn-lg rounded-pill"
+              onClick={handleSearch}  // ここにハンドラーを追加
+            >
+              Search
             </button>
           </div>
         
           <div id="map" ref={mapRef}></div>
           <h3 data-i18n="section.search.result">検索結果</h3>
           <div className="search-results">
-          
-        </div>
+            {searchResults.length === 0 ? (
+              <p>No farms found matching your criteria.</p>
+            ) : (
+              <div className="card-grid">
+                {searchResults.map((farm, index) => (
+                  <div 
+                    key={index} 
+                    className="card" 
+                    onClick={() => handleCardClick(farm.name)}
+                  >
+                    <img src={farm.img} alt={farm.name} />
+                    <div className="title">{farm.name}</div>
+                    <div className="subtitle">
+                      Region: {farm.region}<br />
+                      Expected ROI: {farm.roi} / Risk Level: {farm.risk}<br />
+                      Soil pH: {farm.soilPH} (Score: {farm.soilScore})<br />
+                      Main Crop: {farm.crop}<br />
+                      Potential Score: {farm.potential}<br />
+                      Irrigation: {farm.waterSupply} / Access: {farm.accessibility} / 
+                      Crop Diversity: {farm.cropDiversity}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </section>
 
         {/* 投資ポートフォリオセクション */}
