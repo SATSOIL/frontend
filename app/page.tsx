@@ -303,12 +303,12 @@ const Home: React.FC = () => {
         </section>
         {/* 農地A詳細セクション */}
         <section id="farmADetail" className={activeSection === 'farmADetail' ? 'active' : ''}>
-          <h2>農地A 詳細情報</h2>
-          <p>所在地：北海道・札幌市 / 面積：2.3 ha / オーナー：〇〇ファーム<br />
+          <h2 data-i18n="farmA.info">農地A 詳細情報</h2>
+          <p data-i18n="farmA.info.place.owner" >所在地：北海道・札幌市 / 面積：2.3 ha / オーナー：〇〇ファーム<br />
              潜在能力スコア：82（最適な土壌pHおよび輪作効果を反映）</p>
           <div className="detail-container">
             <div className="detail-image-area">
-              <h3>衛星タイムラプス</h3>
+              <h3 data-i18n="farmA.satelite.timelaps" >衛星タイムラプス</h3>
               <img 
                 id="farmAImage" 
                 src={`https://placehold.jp/800x400?text=FarmA+${currentImageYear}`} 
@@ -329,19 +329,19 @@ const Home: React.FC = () => {
             </div>
             <div className="detail-info-area">
               <div className="risk-container">
-                <h3>リスク指標</h3>
-                <p>洪水リスク：低</p>
-                <p>土壌浸食リスク：低</p>
-                <p>病害虫リスク：中</p>
+                <h3 data-i18n="farmA.risk">リスク指標</h3>
+                <p data-i18n="farmA.flood.risk">洪水リスク：低</p>
+                <p data-i18n="farmA.elosion.risk">土壌浸食リスク：低</p>
+                <p data-i18n="farmA.pest.risk">病害虫リスク：中</p>
               </div>
               <div className="ndvi-container">
-                <h3>NDVI 推移</h3>
+                <h3 data-i18n="farmA.NDVI.trans">NDVI 推移</h3>
                 <img src="https://placehold.jp/600x300?text=FarmA+NDVI+Graph" alt="FarmA NDVI Graph" />
-                <p>平均 NDVI：0.65（比較的安定）</p>
+                <p data-i18n="farmA.NDVI">平均 NDVI：0.65（比較的安定）</p>
               </div>
               <div className="simulation-container">
-                <h3>投資シミュレーション</h3>
-                <p id="farmASimulationResult">
+                <h3 data-i18n="farmA.simulation">投資シミュレーション</h3>
+                <p id="farmASimulationResult" data-i18n="farmA.simulation.result">
                   基準ROI：8%<br />
                   輪作最適化効果：＋2%<br />
                   生産管理改善効果：＋2%<br />
@@ -351,16 +351,16 @@ const Home: React.FC = () => {
                 </p>
                 <br/>
                 <div className="button-group">
-                  <button className="btn" onClick={() => setActiveSection('ddReport')}>
+                  <button className="btn" onClick={() => setActiveSection('ddReport')} data-i18n="DDreport">
                     DDレポート生成
                   </button>
-                  <button className="btn btn-secondary" onClick={() => setActiveSection('investFlow')}>
+                  <button className="btn btn-secondary" onClick={() => setActiveSection('investFlow')} data-i18n="investing">
                     投資手続きへ
                   </button>
                 </div>
               </div>
               <div style={{marginTop: '10px'}}>
-                <button className="btn" onClick={() => alert('ウォッチリストに追加しました')}>
+                <button className="btn" onClick={() => alert('ウォッチリストに追加しました')} data-i18n="addWatchList">
                   ウォッチリストに追加
                 </button>
               </div>
@@ -370,18 +370,18 @@ const Home: React.FC = () => {
 
         {/* DDレポートセクション */}
         <section id="ddReport" className={activeSection === 'ddReport' ? 'active' : ''}>
-          <h2>DDレポート</h2>
-          <p>こちらは、投資判断に必要な解析データと詳細な分析コメントをまとめたレポートです。</p>
+          <h2 data-i18n="DDreport.content">DDレポート</h2>
+          <p data-i18n="DDreort.text"> こちらは、投資判断に必要な解析データと詳細な分析コメントをまとめたレポートです。</p>
           <div className="dd-report-container">
-            <h3>1. 農地概要</h3>
-            <p>所在地：北海道・札幌市</p>
-            <p>面積：2.3 ha</p>
-            <p>オーナー：〇〇ファーム</p>
-            <p>潜在能力スコア：82</p>
+            <h3 data-i18n="DDreort.text1">1. 農地概要</h3>
+            <p data-i18n="DDreort.text1.place">所在地：北海道・札幌市</p>
+            <p data-i18n="DDreort.text1.square">面積：2.3 ha</p>
+            <p data-i18n="DDreort.text1.owner">オーナー：〇〇ファーム</p>
+            <p data-i18n="DDreort.text1.score">潜在能力スコア：82</p>
 
-            <h3>2. 衛星解析</h3>
-            <p>平均 NDVI：0.60～0.65（安定推移）</p>
-            <p>洪水リスク：低～中</p>
+            <h3 data-i18n="DDreort.tex2.analysis">2. 衛星解析</h3>
+            <p data-i18n="DDreort.tex2.NDVI">平均 NDVI：0.60～0.65（安定推移）</p>
+            <p data-i18n="DDreort.tex2.floodLisk">洪水リスク：低～中</p>
             <div className="satellite-image">
               <img 
                 src="https://placehold.jp/800x400?text=Satellite+Analysis+Summary" 
@@ -390,26 +390,27 @@ const Home: React.FC = () => {
               />
             </div>
 
-            <h3>3. 土壌・気候データ</h3>
-            <p>土壌pH：6.0～6.5 / 有機物量：高め</p>
-            <p>年間降水量：約1200mm / 日照時間：2000h</p>
+            <h3 data-i18n="DDreort.tex3.data">3. 土壌・気候データ</h3>
+            <p data-i18n="DDreort.tex3.ph">土壌pH：6.0～6.5 / 有機物量：高め</p>
+            <p data-i18n="DDreort.tex3.rain">年間降水量：約1200mm / 日照時間：2000h</p>
 
-            <h3>4. リスク評価と収益性</h3>
+            <h3 data-i18n="DDreort.tex4.risk">4. リスク評価と収益性</h3>
             <ul>
-              <li>病害虫リスク：低～中</li>
-              <li>土壌浸食リスク：低</li>
-              <li>収量予測：1000～1200 kg/ha</li>
-              <li>価格変動：過去3年の変動±5%</li>
+              <li data-i18n="DDreort.tex4.pest.risk">病害虫リスク：低～中</li>
+              <li data-i18n="DDreort.tex4.soil.risk">土壌浸食リスク：低</li>
+              <li data-i18n="DDreort.tex4.profit">収量予測：1000～1200 kg/ha</li>
+              <li data-i18n="DDreort.tex4.price">価格変動：過去3年の変動±5%</li>
             </ul>
 
-            <h3>5. 分析コメント</h3>
-            <p>全体としてリスクは低水準にあり、輪作最適化と生産管理の徹底により収益性の向上が期待されます。
+            <h3 data-i18n="DDreort.tex5.comment">5. 分析コメント</h3>
+            <p data-i18n="DDreort.tex5.text">全体としてリスクは低水準にあり、輪作最適化と生産管理の徹底により収益性の向上が期待されます。
                商品先物価格および干ばつリスクを考慮した定期モニタリングを推奨いたします。</p>
           </div>
           <div className="button-group mt-4">
             <button 
               className="btn btn-secondary" 
               onClick={() => setActiveSection('farmADetail')}
+              data-i18n="back"
             >
               戻る
             </button>
@@ -417,35 +418,37 @@ const Home: React.FC = () => {
         </section>
          {/* 投資手続きセクション */}
          <section id="investFlow" className={activeSection === 'investFlow' ? 'active' : ''}>
-          <h2>投資手続き</h2>
-          <p>以下のステップに従い、投資手続きを進めてください。</p>
+          <h2 data-i18n="secction.invest">投資手続き</h2>
+          <p data-i18n="secction.invest.text"> 以下のステップに従い、投資手続きを進めてください。</p>
           <div className="investment-flow-container">
             <ol className="investment-steps">
               <li className="mb-4">
-                <h4>本人確認</h4>
-                <p>身分証明書のアップロードおよび本人確認書類の提出が必要です。</p>
+                <h4 data-i18n="secction.invest.identifie">本人確認</h4>
+                <p data-i18n="secction.invest.identifie.text">身分証明書のアップロードおよび本人確認書類の提出が必要です。</p>
                 <button 
                   className="btn btn-secondary"
                   onClick={() => alert('本人確認書類アップロード画面へ')}
+                  data-i18n="secction.invest.upload"
                 >
                   アップロード
                 </button>
               </li>
               <li className="mb-4">
-                <h4>契約書類の確認</h4>
-                <p>電子契約書の内容をご確認の上、電子署名を実行してください。</p>
+                <h4 data-i18n="secction.invest.contract">契約書類の確認</h4>
+                <p data-i18n="secction.invest.contract.text">電子契約書の内容をご確認の上、電子署名を実行してください。</p>
                 <button 
                   className="btn btn-secondary"
                   onClick={() => alert('電子署名画面へ')}
+                  data-i18n="secction.invest.sign"
                 >
                   電子署名
                 </button>
               </li>
               <li className="mb-4">
-                <h4>投資額設定</h4>
-                <p>適正投資額の目安：<strong>1,000,000円</strong></p>
+                <h4 data-i18n="secction.invest.amount.setting">投資額設定</h4>
+                <p data-i18n="secction.invest.criterion">適正投資額の目安：<strong data-i18n="secction.invest.criterion.amount">1,000,000円</strong></p>
                 <div className="input-group">
-                  <label htmlFor="investAmount">投資額 (円):</label>
+                  <label htmlFor="investAmount" data-i18n="secction.invest.amount">投資額 (円):</label>
                   <input 
                     type="number" 
                     id="investAmount" 
@@ -458,16 +461,18 @@ const Home: React.FC = () => {
                 <button 
                   className="btn btn-secondary mt-2"
                   onClick={() => alert('投資額を確定しました')}
+                  data-i18n="secction.invest.confirm"
                 >
                   確定
                 </button>
               </li>
               <li className="mb-4">
-                <h4>お支払い</h4>
-                <p>銀行振込、オンライン決済、クレジットカードなど各種決済に対応しております。</p>
+                <h4 data-i18n="secction.invest.pay">お支払い</h4>
+                <p data-i18n="secction.invest.pay.text">銀行振込、オンライン決済、クレジットカードなど各種決済に対応しております。</p>
                 <button 
                   className="btn"
                   onClick={() => alert('決済画面へ')}
+                  data-i18n="secction.invest.proceed"
                 >
                   決済へ進む
                 </button>
@@ -478,6 +483,7 @@ const Home: React.FC = () => {
             <button 
               className="btn btn-secondary"
               onClick={() => setActiveSection('farmADetail')}
+              data-i18n="secction.invest.cancel"
             >
               キャンセル
             </button>
