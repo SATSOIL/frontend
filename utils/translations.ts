@@ -44,6 +44,7 @@ export const translations = {
     "section.mypage.t4": "予測ROI",
     "section.mypage.subtitle": "投資中の農地",
     "section.mypage.watchlist": "ウォッチリスト",
+    "section.mypage.watchlist.empty":"ウォッチリストは空です",
     "section.mypage.reportlist": "レポート一覧",
     "tabcontainer.simpleserach": "簡易検索",
     "tabcontainer.detailserach": "詳細検索",
@@ -120,6 +121,8 @@ export const translations = {
     "secction.invest.pay.text":"銀行振込、オンライン決済、クレジットカードなど各種決済に対応しております。",
     "secction.invest.proceed":"決済へ進む",
     "secction.invest.cancel":"キャンセル",
+    "invest.portphorio":"投資ポートフォリオ",
+    "invest.farm":"投資中の農地",
   },
   en: {
     "logo": "SATSOIL",
@@ -166,6 +169,7 @@ export const translations = {
     "section.mypage.t4": "Expected ROI",
     "section.mypage.subtitle": "Invested Farms",
     "section.mypage.watchlist": "Watchlist",
+    "section.mypage.watchlist.empty":"Watchlist is empty",
     "section.mypage.reportlist": "Report List",
     "tabcontainer.simpleserach": "Simple Search",
     "tabcontainer.detailserach": "Detailed Search",
@@ -242,7 +246,8 @@ export const translations = {
     "secction.invest.pay.text":"We accept various payment methods such as bank transfer, online payment, and credit card.",
     "secction.invest.proceed":"Proceed to payment",
     "secction.invest.cancel":"  Cancel",
-
+    "invest.portphorio":"Investment Portfolio",
+    "invest.farm":"Invested Farms",
   }
 };
 

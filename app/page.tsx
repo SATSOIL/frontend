@@ -16,9 +16,9 @@ function dmsToDecimal(degrees: number, minutes: number, seconds: number): number
 }
 
 const INVESTED_FARMS = [
-  { id: 1, name: '農地A', amount: 1500000, currentValue: 1620000, roi: '+8%' },
-  { id: 2, name: '農地B', amount: 2000000, currentValue: 2160000, roi: '+8%' },
-  { id: 3, name: '農地C', amount: 1200000, currentValue: 1296000, roi: '+8%' },
+  { id: 1, name: 'Farm A', amount: 1500000, currentValue: 1620000, roi: '+8%' },
+  { id: 2, name: 'Farm B', amount: 2000000, currentValue: 2160000, roi: '+8%' },
+  { id: 3, name: 'Farm C', amount: 1200000, currentValue: 1296000, roi: '+8%' },
 ];
 
 interface SearchResult {
@@ -55,6 +55,13 @@ const Home: React.FC = () => {
   };
   
   const handleSearch = () => {
+    const regionGroup = (document.getElementById("regionGroup") as HTMLSelectElement)!.value;
+    const country = (document.getElementById("country") as HTMLSelectElement)!.value;
+    const prefecture = (document.getElementById("prefecture") as HTMLSelectElement)!.value;
+    const regionDetail = (document.getElementById("regionDetail") as HTMLInputElement)!.value;
+    const minScore = (document.getElementById("minScore") as HTMLInputElement)!.value;
+    const maxScore = (document.getElementById("maxScore") as HTMLInputElement)!.value;
+  
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
     const crops = ["Rice", "Wheat", "Soybean", "Tomato", "Lettuce", "Cucumber", "Pepper", "Cotton"];
     const risks = ["Low", "Medium", "High"];
@@ -72,8 +79,8 @@ const Home: React.FC = () => {
       const rotationScore = Math.floor(Math.random() * 51) + 50;
       const potentialScore = Math.floor((soilScore + rotationScore) / 2);
       const crop = crops[i % crops.length];
-      const country = countries[Math.floor(Math.random() * countries.length)];
-      const region = regions[country][Math.floor(Math.random() * regions[country].length)];
+      const randCountry = countries[Math.floor(Math.random() * countries.length)];
+      const randRegion = regions[randCountry][Math.floor(Math.random() * regions[randCountry].length)];
       
       let roi;
       switch(crop) {
@@ -90,7 +97,7 @@ const Home: React.FC = () => {
   
       return {
         name: `Farm ${letter}`,
-        region: `${country} - ${region}`,
+        region: `${randCountry} - ${randRegion}`,
         soilPH,
         soilScore,
         rotationScore,
@@ -105,7 +112,21 @@ const Home: React.FC = () => {
       };
     });
   
-    setSearchResults(dummyData);
+    const filtered = dummyData.filter(farm => {
+      // Filter by country if provided.
+      if (country && !farm.region.startsWith(country)) return false;
+      // Filter by prefecture if provided.
+      if (prefecture && !farm.region.includes(prefecture)) return false;
+      // Filter by regionDetail if provided.
+      if (regionDetail && !farm.region.toLowerCase().includes(regionDetail.toLowerCase())) return false;
+      // Filter by minScore.
+      if (minScore && farm.soilScore < Number(minScore)) return false;
+      // Filter by maxScore.
+      if (maxScore && farm.soilScore > Number(maxScore)) return false;
+      return true;
+    });
+  
+    setSearchResults(filtered);
   };
 
   const [activeSection, setActiveSection] = useState('home');
@@ -258,7 +279,20 @@ const Home: React.FC = () => {
             <div className="row g-3">
               <div className="col-md-3">
                 <label htmlFor="regionGroup" data-i18n="section.search.regionGroup">地域グループ:</label>
-                <select id="regionGroup" className="form-select">
+                <select id="regionGroup" className="form-select" onChange={() => {
+                    const rg = (document.getElementById("regionGroup") as HTMLSelectElement)!.value;
+                    const countrySelect = document.getElementById("country") as HTMLSelectElement;
+                    if (rg === "Asia") {
+                      countrySelect.innerHTML = `<option value="">指定なし</option><option value="Japan">Japan</option><option value="China">China</option>`;
+                    } else if (rg === "Europe") {
+                      countrySelect.innerHTML = `<option value="">指定なし</option><option value="Russia">Russia</option>`;
+                    } else if (rg === "NorthAmerica") {
+                      countrySelect.innerHTML = `<option value="">指定なし</option><option value="America">America</option>`;
+                    } else {
+                      // default full list if needed
+                      countrySelect.innerHTML = `<option value="">指定なし</option><option value="America">America</option><option value="Japan">Japan</option><option value="China">China</option><option value="Russia">Russia</option>`;
+                    }
+                }}>
                   <option value="" data-i18n="section.search.region.none">指定なし</option>
                   <option value="Asia">Asia</option>
                   <option value="Africa">Africa</option>
@@ -270,14 +304,42 @@ const Home: React.FC = () => {
               </div>
               <div className="col-md-3">
                 <label htmlFor="country" data-i18n="simplesearch_country">Country:</label>
-                <select id="country" className="form-select">
+                <select id="country" className="form-select" onChange={() => {
+                    const country = (document.getElementById("country") as HTMLSelectElement)!.value;
+                    const prefectureSelect = document.getElementById("prefecture") as HTMLSelectElement;
+                    if (country === "Japan") {
+                      prefectureSelect.innerHTML =
+                        `<option value="">指定なし</option>` +
+                        ["Hokkaido", "Ibaraki", "Kumamoto"].map(region => `<option value="${region}">${region}</option>`).join('');
+                    } else if (country === "China") {
+                      prefectureSelect.innerHTML =
+                        `<option value="">指定なし</option>` +
+                        ["Beijing", "Shanghai", "Guangdong"].map(region => `<option value="${region}">${region}</option>`).join('');
+                    } else if (country === "Russia") {
+                      prefectureSelect.innerHTML =
+                        `<option value="">指定なし</option>` +
+                        ["Moscow", "Saint Petersburg", "Siberia"].map(region => `<option value="${region}">${region}</option>`).join('');
+                    } else if (country === "America") {
+                      prefectureSelect.innerHTML =
+                        `<option value="">指定なし</option>` +
+                        ["California", "Texas", "New York"].map(region => `<option value="${region}">${region}</option>`).join('');
+                    } else {
+                      prefectureSelect.innerHTML = `<option value="">指定なし</option>`;
+                    }
+                }}>
                   <option value="" data-i18n="simplesearch_country_nonassign">指定なし</option>
+                  {/* initial options; may be updated by regionGroup onChange */}
+                  <option value="America">America</option>
+                  <option value="Japan">Japan</option>
+                  <option value="China">China</option>
+                  <option value="Russia">Russia</option>
                 </select>
               </div>
               <div className="col-md-3">
                 <label htmlFor="prefecture" data-i18n="simplesearch_state">Prefecture/State:</label>
                 <select id="prefecture" className="form-select">
                   <option value="" data-i18n="simplesearch_state_nonassign">指定なし</option>
+                  {/* initial options will be replaced via country onChange */}
                 </select>
               </div>
               <div className="col-md-3">
@@ -285,8 +347,12 @@ const Home: React.FC = () => {
                 <input type="text" id="regionDetail" placeholder="例 : Tokyo, Kenya" className="form-control"/>
               </div>
               <div className="col-md-3">
-                <label htmlFor="minScore" data-i18n="section.search.evalRange">評価スコア範囲:</label>
+                <label htmlFor="minScore" data-i18n="section.search.evalRange">評価スコア下限:</label>
                 <input type="number" id="minScore" className="form-control" min="0" max="100" defaultValue="1"/>
+              </div>
+              <div className="col-md-3">
+                <label htmlFor="maxScore">評価スコア上限:</label>
+                <input type="number" id="maxScore" className="form-control" min="0" max="100" defaultValue="100"/>
               </div>
             </div>
           </div>
@@ -382,9 +448,9 @@ const Home: React.FC = () => {
 
         {/* 投資ポートフォリオセクション */}
         <section id="mypage" className={activeSection === 'mypage' ? 'active' : ''}>
-          <h2>投資ポートフォリオ</h2>
+          <h2 data-i18n="invest.portphorio">投資ポートフォリオ</h2>
           <div className="portfolio-container">
-            <h3>投資中の農地</h3>
+            <h3 data-i18n="invest.farm">投資中の農地</h3>
             <div className="table-responsive">
               <table className="table table-hover">
                 <thead className="table-light">
@@ -418,12 +484,12 @@ const Home: React.FC = () => {
                     className="btn btn-danger btn-sm"
                     onClick={() => removeFromWatchlist(farmName)}
                   >
-                    削除
+                    Delete
                   </button>
                 </li>
               ))}
               {watchlist.length === 0 && (
-                <li className="watchlist-empty">ウォッチリストは空です</li>
+                <li className="watchlist-empty" data-i18n="section.mypage.watchlist.empty">ウォッチリストは空です</li>
               )}
             </ul>          
           <br />
