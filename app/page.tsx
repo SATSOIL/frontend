@@ -497,11 +497,6 @@ const Home: React.FC = () => {
                   </button>
                 </div>
               </div>
-              <div style={{marginTop: '10px'}}>
-                <button className="btn" onClick={() => alert('ウォッチリストに追加しました')} data-i18n="addWatchList">
-                  ウォッチリストに追加
-                </button>
-              </div>
             </div>
           </div>
           <div style={{marginTop: '10px'}}>
